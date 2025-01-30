@@ -64,19 +64,19 @@ function printTestSummary(testResults: any[]) {
     } else {
       core.summary.addHeading(`Test Run ${testRunResult}`);
     }
-    core.summary.addRaw(`| ${testRunTotalTests} | Total Tests Run |`, true);
-    core.summary.addRaw(`|---|---|`, true);
-    core.summary.addRaw(`|🕑| ${testRunDuration} |`);
-    core.summary.addRaw(`|✅| ${testRunPassedTests} passed |`, true);
-    core.summary.addRaw(`|❌| ${testRunFailedTests} failed |`, true);
+    core.summary.addRaw(`\n| ${testRunTotalTests} | Total Tests Run |\n`);
+    core.summary.addRaw(`|---|---|\n`);
+    core.summary.addRaw(`|🕑| ${testRunDuration} |\n`);
+    core.summary.addRaw(`|✅| ${testRunPassedTests} passed |\n`);
+    core.summary.addRaw(`|❌| ${testRunFailedTests} failed |\n`);
     if (testRunAsserts > 0) {
-      core.summary.addRaw(`|🚩| ${testRunAsserts} asserts |`, true);
+      core.summary.addRaw(`|🚩| ${testRunAsserts} asserts |\n`);
     }
     if (testRunSkippedTests > 0) {
-      core.summary.addRaw(`|⏭️| ${testRunSkippedTests} skipped |`, true);
+      core.summary.addRaw(`|⏭️| ${testRunSkippedTests} skipped |\n`);
     }
     if (testRunInconclusiveTests > 0) {
-      core.summary.addRaw(`|❔| ${testRunInconclusiveTests} inconclusive |`, true);
+      core.summary.addRaw(`|❔| ${testRunInconclusiveTests} inconclusive |\n`);
     }
 
     core.summary.write();
