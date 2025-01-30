@@ -136,17 +136,17 @@ function getTestCaseDetails(testCase: any, indentLevel: number): string {
   if (failure) {
     const failureMessage = failure['message'];
     if (failureMessage) {
-      details += `${indent}---\n${failure['message']}\n`;
+      details += `${indent}---\n${indent}${failure['message']}\n`;
     }
     const stackTrace = failure['stack-trace'];
     if (stackTrace) {
-      details += `${indent}---\n${stackTrace}\n`;
+      details += `${indent}---\n${indent}${stackTrace}\n`;
     }
   }
   const utps = parseUtp(testCase['output']);
   const outputLines = utps.map((utp) => utp.message).filter((line) => line !== undefined && line !== '');
   if (outputLines.length > 0) {
-    details += `${indent}---\n${outputLines.join('\n')}\n`;
+    details += `${indent}---\n${indent}${outputLines.join('\n')}\n`;
   }
   return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, indentLevel, testCaseResult !== 'Passed');
 }
@@ -154,7 +154,7 @@ function getTestCaseDetails(testCase: any, indentLevel: number): string {
 function foldoutSection(summary: string, body: string, indentLevel: number, isOpen: boolean): string {
   const indent = tabIndent(indentLevel);
   const open = isOpen ? ' open' : '';
-  return `${indent}<details${open}>\n<summary>${summary}</summary>\n${body}\n\n</details>\n`;
+  return `${indent}<details${open}>\n${indent}<summary>${summary}</summary>\n\n${indent}${body}\n</details>`;
 }
 
 function tabIndent(indentLevel: number): string {
