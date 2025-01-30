@@ -1,9 +1,6 @@
 import core = require('@actions/core');
 import glob = require('@actions/glob');
 import {
-  TestRun
-} from './types';
-import {
   parseTestResults
 } from './parser';
 
@@ -24,7 +21,7 @@ const main = async () => {
     for (const file of testResultFiles) {
       core.info(`  > ${file}`);
     }
-    const testResults: TestRun[] = [];
+    const testResults: any[] = [];
     for (const file of testResultFiles) {
       try {
         testResults.push(await parseTestResults(file));

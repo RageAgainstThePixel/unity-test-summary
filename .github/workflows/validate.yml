@@ -42,6 +42,7 @@ jobs:
         with:
           repository: RageAgainstThePixel/com.utilities.async
           path: com.utilities.async
+          ref: test
       - uses: RageAgainstThePixel/unity-setup@v1
         with:
           unity-version: ${{ matrix.unity-version }}
