@@ -32,9 +32,51 @@ const main = async () => {
     for (const testResult of testResults) {
       core.info(JSON.stringify(testResult, null, 2));
     }
+    printTestSummary(testResults);
   } catch (error) {
     core.setFailed(error);
   }
 }
 
 main();
+
+/**
+ * Prints the test summaries as markdown for the GitHub Actions Summary.
+ * Similar to unity test runner, where each assembly and test suite is a foldout section, with the test results inside.
+ * Each fold out section has a green checkmark or red x, depending on the test results.
+ * Users can click on the foldout section to see the test results with the printed details of that specific test fixture.
+ * We will also print annotations for failed tests with the error message.
+ * @param testResults
+ */
+function printTestSummary(testResults: any[]) {
+  let totalTests = 0;
+  for (const testRun of testResults) {
+    const testRunResult = testRun['result'].replace(/\s*\(.*?\)\s*/g, '');
+    const testRunDuration = testRun['duration'];
+    const testRunTotalTests = testRun['total'] as number;
+    const testRunPassedTests = testRun['passed'] as number;
+    const testRunFailedTests = testRun['failed'] as number;
+    const testRunInconclusiveTests = testRun['inconclusive'] as number;
+    const testRunSkippedTests = testRun['skipped'] as number;
+    const testRunAsserts = testRun['asserts'] as number;
+    if (testResults.length > 1) {
+      core.summary.addHeading(`Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
+    } else {
+      core.summary.addHeading(`Test Run ${testRunResult}`);
+    }
+    core.summary.addRaw(`| ${testRunTotalTests} | Total Tests Run |`);
+    core.summary.addRaw(`|---|---|`);
+    core.summary.addRaw(`|🕑| ${testRunDuration} |`);
+    core.summary.addRaw(`|✅| ${testRunPassedTests} passed |`);
+    core.summary.addRaw(`|❌| ${testRunFailedTests} failed |`);
+    if (testRunAsserts > 0) {
+      core.summary.addRaw(`|🚩| ${testRunAsserts} asserts |`);
+    }
+    if (testRunSkippedTests > 0) {
+      core.summary.addRaw(`|⏭️| ${testRunSkippedTests} skipped |`);
+    }
+    if (testRunInconclusiveTests > 0) {
+      core.summary.addRaw(`|❔| ${testRunInconclusiveTests} inconclusive |`);
+    }
+  }
+}

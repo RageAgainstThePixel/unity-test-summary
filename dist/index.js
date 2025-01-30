@@ -31537,12 +31537,46 @@ const main = async () => {
         for (const testResult of testResults) {
             core.info(JSON.stringify(testResult, null, 2));
         }
+        printTestSummary(testResults);
     }
     catch (error) {
         core.setFailed(error);
     }
 };
 main();
+function printTestSummary(testResults) {
+    let totalTests = 0;
+    for (const testRun of testResults) {
+        const testRunResult = testRun['result'].replace(/\s*\(.*?\)\s*/g, '');
+        const testRunDuration = testRun['duration'];
+        const testRunTotalTests = testRun['total'];
+        const testRunPassedTests = testRun['passed'];
+        const testRunFailedTests = testRun['failed'];
+        const testRunInconclusiveTests = testRun['inconclusive'];
+        const testRunSkippedTests = testRun['skipped'];
+        const testRunAsserts = testRun['asserts'];
+        if (testResults.length > 1) {
+            core.summary.addHeading(`Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
+        }
+        else {
+            core.summary.addHeading(`Test Run ${testRunResult}`);
+        }
+        core.summary.addRaw(`| ${testRunTotalTests} | Total Tests Run |`);
+        core.summary.addRaw(`|---|---|`);
+        core.summary.addRaw(`|🕑| ${testRunDuration} |`);
+        core.summary.addRaw(`|✅| ${testRunPassedTests} passed |`);
+        core.summary.addRaw(`|❌| ${testRunFailedTests} failed |`);
+        if (testRunAsserts > 0) {
+            core.summary.addRaw(`|🚩| ${testRunAsserts} asserts |`);
+        }
+        if (testRunSkippedTests > 0) {
+            core.summary.addRaw(`|⏭️| ${testRunSkippedTests} skipped |`);
+        }
+        if (testRunInconclusiveTests > 0) {
+            core.summary.addRaw(`|❔| ${testRunInconclusiveTests} inconclusive |`);
+        }
+    }
+}
 
 })();
 
