@@ -20,3 +20,18 @@ export async function parseTestResults(file: string): Promise<any> {
   const testJson = JSON.stringify(obj['test-run'], null, 2);
   return JSON.parse(testJson);
 }
+
+/**
+ * parse the utp output.
+ * @param output
+ * @returns The parsed utp output as an array of objects
+ */
+export function parseUtp(output: string): any[] {
+  let objs = [];
+  const regex = /##utp:({.*})/g;
+  let match: string[];
+  while ((match = regex.exec(output)) !== null) {
+    objs.push(JSON.parse(match[1]));
+  }
+  return objs;
+}

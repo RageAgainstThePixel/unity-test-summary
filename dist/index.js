@@ -29583,6 +29583,7 @@ exports["default"] = _default;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseTestResults = parseTestResults;
+exports.parseUtp = parseUtp;
 const fs = __nccwpck_require__(7147);
 const fast_xml_parser_1 = __nccwpck_require__(2603);
 async function parseTestResults(file) {
@@ -29598,6 +29599,15 @@ async function parseTestResults(file) {
     const obj = parser.parse(contents);
     const testJson = JSON.stringify(obj['test-run'], null, 2);
     return JSON.parse(testJson);
+}
+function parseUtp(output) {
+    let objs = [];
+    const regex = /##utp:({.*})/g;
+    let match;
+    while ((match = regex.exec(output)) !== null) {
+        objs.push(JSON.parse(match[1]));
+    }
+    return objs;
 }
 
 
@@ -31576,8 +31586,68 @@ function printTestSummary(testResults) {
         if (testRunInconclusiveTests > 0) {
             core.summary.addRaw(`|❔| ${testRunInconclusiveTests} inconclusive |\n`);
         }
+        core.summary.addRaw(`\n`);
+        const testSuite = testRun['test-suite'];
+        if (Array.isArray(testSuite)) {
+            for (const suite of testSuite) {
+                core.summary.addRaw(getTestSuiteDetails(suite));
+            }
+        }
+        else {
+            core.summary.addRaw(getTestSuiteDetails(testSuite));
+        }
         core.summary.write();
     }
+}
+function getTestSuiteDetails(testSuite) {
+    const testSuiteName = testSuite['name'];
+    const testSuiteResult = testSuite['result'].replace(/\s*\(.*?\)\s*/g, '');
+    const testSuiteResultIcon = testSuiteResult === 'Passed' ? '✅' : '❌';
+    let details = '';
+    const childTestSuites = testSuite['test-suite'];
+    if (childTestSuites !== undefined) {
+        if (Array.isArray(childTestSuites)) {
+            for (const suite of childTestSuites) {
+                details += getTestSuiteDetails(suite);
+            }
+        }
+        else {
+            details += getTestSuiteDetails(childTestSuites);
+        }
+    }
+    const childTestCases = testSuite['test-case'];
+    if (childTestCases !== undefined) {
+        if (Array.isArray(childTestCases)) {
+            for (const testCase of childTestCases) {
+                details += getTestCaseDetails(testCase);
+            }
+        }
+        else {
+            details += getTestCaseDetails(childTestCases);
+        }
+    }
+    return foldoutSection(`${testSuiteResultIcon} ${testSuiteName}`, details);
+}
+function getTestCaseDetails(testCase) {
+    const testCaseFullName = testCase['fullname'];
+    const testCaseResult = testCase['result'];
+    const testCaseResultIcon = testCaseResult === 'Passed' ? '✅' : '❌';
+    const failure = testCase['failure'];
+    let details = `${testCase['methodname']} (${testCase['duration']}s)\n---\n`;
+    if (failure) {
+        details += `${failure['message']}\n---\n${failure['stack-trace']}\n`;
+    }
+    const utps = (0, parser_1.parseUtp)(testCase['output']);
+    const outputLines = utps.map((utp) => {
+        return utp.message;
+    });
+    if (outputLines.length > 0) {
+        details += `---\n${outputLines.join('\n')}\n`;
+    }
+    return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details);
+}
+function foldoutSection(summary, body) {
+    return `<details>\n\n<summary>${summary}</summary>\n${body}\n\n</details>\n`;
 }
 
 })();
