@@ -31626,7 +31626,7 @@ function getTestSuiteDetails(testSuite, indentLevel) {
             details += getTestCaseDetails(childTestCases, indentLevel + 1);
         }
     }
-    return foldoutSection(`${testSuiteResultIcon} ${testSuiteName}`, details, indentLevel);
+    return foldoutSection(`${testSuiteResultIcon} ${testSuiteName}`, details, indentLevel, testSuiteResult !== 'Passed');
 }
 function getTestCaseDetails(testCase, indentLevel) {
     const indent = tabIndent(indentLevel);
@@ -31650,11 +31650,12 @@ function getTestCaseDetails(testCase, indentLevel) {
     if (outputLines.length > 0) {
         details += `${indent}---\n${outputLines.join('\n')}\n`;
     }
-    return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, indentLevel);
+    return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, indentLevel, testCaseResult !== 'Passed');
 }
-function foldoutSection(summary, body, indentLevel) {
+function foldoutSection(summary, body, indentLevel, isOpen) {
     const indent = tabIndent(indentLevel);
-    return `${indent}<details open>\n<summary>${summary}</summary>\n${body}\n\n</details>\n`;
+    const open = isOpen ? ' open' : '';
+    return `${indent}<details${open}>\n<summary>${summary}</summary>\n${body}\n\n</details>\n`;
 }
 function tabIndent(indentLevel) {
     return '&nbsp;'.repeat(indentLevel);
