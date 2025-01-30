@@ -1,15 +1,11 @@
 import core = require('@actions/core');
 import glob = require('@actions/glob');
-import * as fs from "fs";
 import {
-  UnityTestResults,
-  TestRun,
-  TestSuite,
-  TestCase,
-  Property,
-  Failure
+  TestRun
 } from './types';
-import { XMLParser } from "fast-xml-parser";
+import {
+  parseTestResults
+} from './parser';
 
 const main = async () => {
   try {
@@ -17,7 +13,7 @@ const main = async () => {
     const testSuiteName = core.getInput('test-suite-name');
     core.info(`Gathering ${testSuiteName}...`);
     core.summary.addHeading(`${testSuiteName} Summary`);
-    core.info(`test-results: ${testResultsInput}`);
+    core.info(`test-results:\n  > ${testResultsInput}`);
     const globber = await glob.create(testResultsInput);
     const testResultFiles = await globber.glob();
     if (testResultFiles.length === 0) {
@@ -26,32 +22,22 @@ const main = async () => {
     }
     core.info(`Found ${testResultFiles.length} test result files:`);
     for (const file of testResultFiles) {
-      core.info(file);
+      core.info(`  > ${file}`);
     }
-    const tests: any[] = [];
+    const testResults: TestRun[] = [];
     for (const file of testResultFiles) {
-      let testResults: UnityTestResults;
       try {
-        testResults = await tryParseTestResults(file);
+        testResults.push(await parseTestResults(file));
       } catch (error) {
         core.error(error);
       }
-      tests.push(testResults);
     }
-    core.info(JSON.stringify(tests));
+    for (const testResult of testResults) {
+      core.info(JSON.stringify(testResult, null, 2));
+    }
   } catch (error) {
     core.setFailed(error);
   }
 }
 
 main();
-
-async function tryParseTestResults(file: string): Promise<any> {
-  await fs.promises.access(file, fs.constants.R_OK);
-  if (!file.endsWith('.xml')) {
-    throw new Error(`${file} is not an xml file.`);
-  }
-  const contents = await fs.promises.readFile(file, 'utf8');
-  const parser = new XMLParser();
-  return parser.parse(contents);
-}

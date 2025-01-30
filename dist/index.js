@@ -29576,6 +29576,33 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ 8412:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.parseTestResults = parseTestResults;
+const fs = __nccwpck_require__(7147);
+const fast_xml_parser_1 = __nccwpck_require__(2603);
+async function parseTestResults(file) {
+    await fs.promises.access(file, fs.constants.R_OK);
+    if (!file.endsWith('.xml')) {
+        throw new Error(`${file} is not an xml file.`);
+    }
+    const contents = await fs.promises.readFile(file, 'utf8');
+    const parser = new fast_xml_parser_1.XMLParser({
+        attributeNamePrefix: ``,
+        ignoreAttributes: false,
+    });
+    const obj = parser.parse(contents);
+    const testJson = JSON.stringify(obj['test-run'], null, 2);
+    return JSON.parse(testJson);
+}
+
+
+/***/ }),
+
 /***/ 4978:
 /***/ ((module) => {
 
@@ -31480,15 +31507,14 @@ var exports = __webpack_exports__;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __nccwpck_require__(2186);
 const glob = __nccwpck_require__(8090);
-const fs = __nccwpck_require__(7147);
-const fast_xml_parser_1 = __nccwpck_require__(2603);
+const parser_1 = __nccwpck_require__(8412);
 const main = async () => {
     try {
         const testResultsInput = core.getInput('test-results');
         const testSuiteName = core.getInput('test-suite-name');
         core.info(`Gathering ${testSuiteName}...`);
         core.summary.addHeading(`${testSuiteName} Summary`);
-        core.info(`test-results: ${testResultsInput}`);
+        core.info(`test-results:\n  > ${testResultsInput}`);
         const globber = await glob.create(testResultsInput);
         const testResultFiles = await globber.glob();
         if (testResultFiles.length === 0) {
@@ -31497,35 +31523,26 @@ const main = async () => {
         }
         core.info(`Found ${testResultFiles.length} test result files:`);
         for (const file of testResultFiles) {
-            core.info(file);
+            core.info(`  > ${file}`);
         }
-        const tests = [];
+        const testResults = [];
         for (const file of testResultFiles) {
-            let testResults;
             try {
-                testResults = await tryParseTestResults(file);
+                testResults.push(await (0, parser_1.parseTestResults)(file));
             }
             catch (error) {
                 core.error(error);
             }
-            tests.push(testResults);
         }
-        core.info(JSON.stringify(tests));
+        for (const testResult of testResults) {
+            core.info(JSON.stringify(testResult, null, 2));
+        }
     }
     catch (error) {
         core.setFailed(error);
     }
 };
 main();
-async function tryParseTestResults(file) {
-    await fs.promises.access(file, fs.constants.R_OK);
-    if (!file.endsWith('.xml')) {
-        throw new Error(`${file} is not an xml file.`);
-    }
-    const contents = await fs.promises.readFile(file, 'utf8');
-    const parser = new fast_xml_parser_1.XMLParser();
-    return parser.parse(contents);
-}
 
 })();
 

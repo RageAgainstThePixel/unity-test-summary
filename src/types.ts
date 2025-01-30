@@ -1,8 +1,4 @@
-export interface UnityTestResults {
-  testRun: TestRun;
-}
-
-export interface TestRun {
+export class TestRun {
   id: string;
   testcasecount: string;
   result: string;
@@ -20,7 +16,7 @@ export interface TestRun {
   testSuite: TestSuite[];
 }
 
-export interface TestSuite {
+export class TestSuite {
   type: string;
   id: string;
   name: string;
@@ -44,12 +40,12 @@ export interface TestSuite {
   testCase?: TestCase[];
 }
 
-export interface Property {
+export class Property {
   name: string;
-  value: string;
+  value: string | number;
 }
 
-export interface TestCase {
+export class TestCase {
   id: string;
   name: string;
   fullname: string;
@@ -67,7 +63,7 @@ export interface TestCase {
   output?: string;
 }
 
-export interface Failure {
+export class Failure {
   message: string;
   stackTrace?: string;
 }
