@@ -64,19 +64,21 @@ function printTestSummary(testResults: any[]) {
     } else {
       core.summary.addHeading(`Test Run ${testRunResult}`);
     }
-    core.summary.addRaw(`| ${testRunTotalTests} | Total Tests Run |`);
-    core.summary.addRaw(`|---|---|`);
+    core.summary.addRaw(`| ${testRunTotalTests} | Total Tests Run |`, true);
+    core.summary.addRaw(`|---|---|`, true);
     core.summary.addRaw(`|🕑| ${testRunDuration} |`);
-    core.summary.addRaw(`|✅| ${testRunPassedTests} passed |`);
-    core.summary.addRaw(`|❌| ${testRunFailedTests} failed |`);
+    core.summary.addRaw(`|✅| ${testRunPassedTests} passed |`, true);
+    core.summary.addRaw(`|❌| ${testRunFailedTests} failed |`, true);
     if (testRunAsserts > 0) {
-      core.summary.addRaw(`|🚩| ${testRunAsserts} asserts |`);
+      core.summary.addRaw(`|🚩| ${testRunAsserts} asserts |`, true);
     }
     if (testRunSkippedTests > 0) {
-      core.summary.addRaw(`|⏭️| ${testRunSkippedTests} skipped |`);
+      core.summary.addRaw(`|⏭️| ${testRunSkippedTests} skipped |`, true);
     }
     if (testRunInconclusiveTests > 0) {
-      core.summary.addRaw(`|❔| ${testRunInconclusiveTests} inconclusive |`);
+      core.summary.addRaw(`|❔| ${testRunInconclusiveTests} inconclusive |`, true);
     }
+
+    core.summary.write();
   }
 }
