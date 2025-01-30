@@ -1,8 +1,13 @@
-name: github-action-template
+name: unity-test-summary
 description: 'A GitHub Actions template repository for TypeScript based Actions'
-# inputs:
-# outputs:
+inputs:
+  test-results:
+    description: 'The path to the test results file(s).'
+    required: true
+  test-suite-name:
+    description: 'The name of the test suite.'
+    required: false
+    default: 'Test Results'
 runs:
   using: 'node20'
   main: 'dist/index.js'
-  #post: 'dist/index.js'
