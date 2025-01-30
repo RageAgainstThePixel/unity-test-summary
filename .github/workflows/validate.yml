@@ -38,6 +38,7 @@ jobs:
             build-target: StandaloneOSX
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           repository: RageAgainstThePixel/com.utilities.async
           path: com.utilities.async
