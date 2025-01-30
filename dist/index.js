@@ -31599,7 +31599,7 @@ function printTestSummary(testResults) {
         core.summary.write();
     }
 }
-function getTestSuiteDetails(testSuite) {
+function getTestSuiteDetails(testSuite, level = 0) {
     const testSuiteName = testSuite['name'];
     const testSuiteResult = testSuite['result'].replace(/\s*\(.*?\)\s*/g, '');
     const testSuiteResultIcon = testSuiteResult === 'Passed' ? '✅' : '❌';
@@ -31608,27 +31608,27 @@ function getTestSuiteDetails(testSuite) {
     if (childTestSuites !== undefined) {
         if (Array.isArray(childTestSuites)) {
             for (const suite of childTestSuites) {
-                details += getTestSuiteDetails(suite);
+                details += getTestSuiteDetails(suite, level + 1);
             }
         }
         else {
-            details += getTestSuiteDetails(childTestSuites);
+            details += getTestSuiteDetails(childTestSuites, level + 1);
         }
     }
     const childTestCases = testSuite['test-case'];
     if (childTestCases !== undefined) {
         if (Array.isArray(childTestCases)) {
             for (const testCase of childTestCases) {
-                details += getTestCaseDetails(testCase);
+                details += getTestCaseDetails(testCase, level + 1);
             }
         }
         else {
-            details += getTestCaseDetails(childTestCases);
+            details += getTestCaseDetails(childTestCases, level + 1);
         }
     }
-    return foldoutSection(`${testSuiteResultIcon} ${testSuiteName}`, details, testSuiteResult !== 'Passed');
+    return foldoutSection(`${testSuiteResultIcon} ${testSuiteName}`, details, testSuiteResult !== 'Passed', level);
 }
-function getTestCaseDetails(testCase) {
+function getTestCaseDetails(testCase, level = 0) {
     const testCaseFullName = testCase['fullname'];
     const testCaseResult = testCase['result'];
     const testCaseResultIcon = testCaseResult === 'Passed' ? '✅' : '❌';
@@ -31641,19 +31641,20 @@ function getTestCaseDetails(testCase) {
         }
         const stackTrace = failure['stack-trace'];
         if (stackTrace) {
-            details += `---\n\`\`\`stacktrace\n${stackTrace}\n\`\`\`\n`;
+            details += `\`\`\`stacktrace\n${stackTrace}\n\`\`\`\n`;
         }
     }
     const utps = (0, parser_1.parseUtp)(testCase['output']);
     const outputLines = utps.map((utp) => utp.message).filter((line) => line !== undefined && line !== '');
     if (outputLines.length > 0) {
-        details += `---\n\`\`\`log\n${outputLines.join('\n')}\n\`\`\`\n`;
+        details += `\`\`\`log\n${outputLines.join('\n')}\n\`\`\`\n`;
     }
-    return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, testCaseResult !== 'Passed');
+    return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, testCaseResult !== 'Passed', level);
 }
-function foldoutSection(summary, body, isOpen) {
+function foldoutSection(summary, body, isOpen, level = 0) {
     const open = isOpen ? ' open' : '';
-    return `<details${open}>\n<summary>${summary}</summary>\n\n${body}\n</details>`;
+    const indent = level * 20;
+    return `<details${open} style="margin-left:${indent}px;">\n<summary>${summary}</summary>\n\n${body}\n</details>`;
 }
 
 })();

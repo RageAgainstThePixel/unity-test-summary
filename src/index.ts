@@ -97,7 +97,7 @@ function printTestSummary(testResults: any[]) {
  * Prints the test suite summary as foldout section.
  * @param suite
  */
-function getTestSuiteDetails(testSuite: any): string {
+function getTestSuiteDetails(testSuite: any, level: number = 0): string {
   const testSuiteName = testSuite['name'];
   const testSuiteResult = testSuite['result'].replace(/\s*\(.*?\)\s*/g, '');
   const testSuiteResultIcon = testSuiteResult === 'Passed' ? '✅' : '❌';
@@ -107,26 +107,26 @@ function getTestSuiteDetails(testSuite: any): string {
 
     if (Array.isArray(childTestSuites)) {
       for (const suite of childTestSuites) {
-        details += getTestSuiteDetails(suite);
+        details += getTestSuiteDetails(suite, level + 1);
       }
     } else {
-      details += getTestSuiteDetails(childTestSuites);
+      details += getTestSuiteDetails(childTestSuites, level + 1);
     }
   }
   const childTestCases = testSuite['test-case'];
   if (childTestCases !== undefined) {
     if (Array.isArray(childTestCases)) {
       for (const testCase of childTestCases) {
-        details += getTestCaseDetails(testCase);
+        details += getTestCaseDetails(testCase, level + 1);
       }
     } else {
-      details += getTestCaseDetails(childTestCases);
+      details += getTestCaseDetails(childTestCases, level + 1);
     }
   }
-  return foldoutSection(`${testSuiteResultIcon} ${testSuiteName}`, details, testSuiteResult !== 'Passed');
+  return foldoutSection(`${testSuiteResultIcon} ${testSuiteName}`, details, testSuiteResult !== 'Passed', level);
 }
 
-function getTestCaseDetails(testCase: any): string {
+function getTestCaseDetails(testCase: any, level: number = 0): string {
   const testCaseFullName = testCase['fullname'];
   const testCaseResult = testCase['result'];
   const testCaseResultIcon = testCaseResult === 'Passed' ? '✅' : '❌';
@@ -139,18 +139,19 @@ function getTestCaseDetails(testCase: any): string {
     }
     const stackTrace = failure['stack-trace'];
     if (stackTrace) {
-      details += `---\n\`\`\`stacktrace\n${stackTrace}\n\`\`\`\n`;
+      details += `\`\`\`stacktrace\n${stackTrace}\n\`\`\`\n`;
     }
   }
   const utps = parseUtp(testCase['output']);
   const outputLines = utps.map((utp) => utp.message).filter((line) => line !== undefined && line !== '');
   if (outputLines.length > 0) {
-    details += `---\n\`\`\`log\n${outputLines.join('\n')}\n\`\`\`\n`;
+    details += `\`\`\`log\n${outputLines.join('\n')}\n\`\`\`\n`;
   }
-  return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, testCaseResult !== 'Passed');
+  return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, testCaseResult !== 'Passed', level);
 }
 
-function foldoutSection(summary: string, body: string, isOpen: boolean): string {
+function foldoutSection(summary: string, body: string, isOpen: boolean, level: number = 0): string {
   const open = isOpen ? ' open' : '';
-  return `<details${open}>\n<summary>${summary}</summary>\n\n${body}\n</details>`;
+  const indent = level * 20; // Adjust the multiplier to control the indentation width
+  return `<details${open} style="margin-left:${indent}px;">\n<summary>${summary}</summary>\n\n${body}\n</details>`;
 }
