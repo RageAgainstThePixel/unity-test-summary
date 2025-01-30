@@ -59,10 +59,11 @@ function printTestSummary(testResults: any[]) {
     const testRunInconclusiveTests = testRun['inconclusive'] as number;
     const testRunSkippedTests = testRun['skipped'] as number;
     const testRunAsserts = testRun['asserts'] as number;
+    const testRunStatusIcon = testRunResult === 'Passed' ? '✅' : '❌';
     if (testResults.length > 1) {
-      core.summary.addHeading(`Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
+      core.summary.addHeading(`${testRunStatusIcon} Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
     } else {
-      core.summary.addHeading(`Test Run ${testRunResult}`);
+      core.summary.addHeading(`${testRunStatusIcon} Test Run ${testRunResult}`);
     }
     core.summary.addRaw(`\n| ${testRunTotalTests} | Total Tests Run |\n`);
     core.summary.addRaw(`|---|---|\n`);
