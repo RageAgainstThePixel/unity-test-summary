@@ -84,10 +84,10 @@ function printTestSummary(testResults: any[]) {
     const testSuite = testRun['test-suite'];
     if (Array.isArray(testSuite)) {
       for (const suite of testSuite) {
-        core.summary.addRaw(getTestSuiteDetails(suite, 0));
+        core.summary.addRaw(getTestSuiteDetails(suite));
       }
     } else {
-      core.summary.addRaw(getTestSuiteDetails(testSuite, 0));
+      core.summary.addRaw(getTestSuiteDetails(testSuite));
     }
     core.summary.write();
   }
@@ -97,7 +97,7 @@ function printTestSummary(testResults: any[]) {
  * Prints the test suite summary as foldout section.
  * @param suite
  */
-function getTestSuiteDetails(testSuite: any, indentLevel: number): string {
+function getTestSuiteDetails(testSuite: any): string {
   const testSuiteName = testSuite['name'];
   const testSuiteResult = testSuite['result'].replace(/\s*\(.*?\)\s*/g, '');
   const testSuiteResultIcon = testSuiteResult === 'Passed' ? '✅' : '❌';
@@ -107,56 +107,50 @@ function getTestSuiteDetails(testSuite: any, indentLevel: number): string {
 
     if (Array.isArray(childTestSuites)) {
       for (const suite of childTestSuites) {
-        details += getTestSuiteDetails(suite, indentLevel + 1);
+        details += getTestSuiteDetails(suite);
       }
     } else {
-      details += getTestSuiteDetails(childTestSuites, indentLevel + 1);
+      details += getTestSuiteDetails(childTestSuites);
     }
   }
   const childTestCases = testSuite['test-case'];
   if (childTestCases !== undefined) {
     if (Array.isArray(childTestCases)) {
       for (const testCase of childTestCases) {
-        details += getTestCaseDetails(testCase, indentLevel + 1);
+        details += getTestCaseDetails(testCase);
       }
     } else {
-      details += getTestCaseDetails(childTestCases, indentLevel + 1);
+      details += getTestCaseDetails(childTestCases);
     }
   }
-  return foldoutSection(`${testSuiteResultIcon} ${testSuiteName}`, details, indentLevel, testSuiteResult !== 'Passed');
+  return foldoutSection(`${testSuiteResultIcon} ${testSuiteName}`, details, testSuiteResult !== 'Passed');
 }
 
-function getTestCaseDetails(testCase: any, indentLevel: number): string {
-  const indent = tabIndent(indentLevel);
+function getTestCaseDetails(testCase: any): string {
   const testCaseFullName = testCase['fullname'];
   const testCaseResult = testCase['result'];
   const testCaseResultIcon = testCaseResult === 'Passed' ? '✅' : '❌';
   const failure = testCase['failure'];
-  let details = `${indent}${testCase['methodname']} (${testCase['duration']}s)\n`;
+  let details = `${testCase['methodname']} (${testCase['duration']}s)\n`;
   if (failure) {
     const failureMessage = failure['message'];
     if (failureMessage) {
-      details += `${indent}---\n${indent}${failure['message']}\n`;
+      details += `---\n${failure['message']}\n`;
     }
     const stackTrace = failure['stack-trace'];
     if (stackTrace) {
-      details += `${indent}---\n${indent}${stackTrace}\n`;
+      details += `---\n\`\`\`stacktrace\n${stackTrace}\n\`\`\`\n`;
     }
   }
   const utps = parseUtp(testCase['output']);
   const outputLines = utps.map((utp) => utp.message).filter((line) => line !== undefined && line !== '');
   if (outputLines.length > 0) {
-    details += `${indent}---\n${indent}${outputLines.join('\n')}\n`;
+    details += `---\n\`\`\`log\n${outputLines.join('\n')}\n\`\`\`\n`;
   }
-  return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, indentLevel, testCaseResult !== 'Passed');
+  return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, testCaseResult !== 'Passed');
 }
 
-function foldoutSection(summary: string, body: string, indentLevel: number, isOpen: boolean): string {
-  const indent = tabIndent(indentLevel);
+function foldoutSection(summary: string, body: string, isOpen: boolean): string {
   const open = isOpen ? ' open' : '';
-  return `${indent}<details${open}>\n${indent}<summary>${summary}</summary>\n\n${indent}${body}\n</details>`;
-}
-
-function tabIndent(indentLevel: number): string {
-  return '&nbsp;'.repeat(indentLevel);
+  return `<details${open}>\n<summary>${summary}</summary>\n\n${body}\n</details>`;
 }
