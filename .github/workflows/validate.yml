@@ -5,7 +5,7 @@ on:
       - 'main'
   pull_request:
     branches:
-      - '*'
+      - '**'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 concurrency:
@@ -71,9 +71,8 @@ jobs:
           name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.unity-version }}-${{ matrix.build-target }}-Artifacts'
           path: |
             ${{ github.workspace }}/**/*.log
-            ${{ github.workspace }}/**/*.xml
       - uses: ./ # RageAgainstThePixel/unity-test-summary
         if: success() || failure()
         with:
-          test-results: ${{ github.workspace }}/**/*.xml
+          test-results: ${{ github.workspace }}/Logs/*-results.xml
           test-suite-name: 'Utilities.Async Test Results'
