@@ -160,5 +160,5 @@ function getTestCaseDetails(testCase: any): string {
 
 function foldoutSection(summary: string, body: string, isOpen: boolean): string {
   const open = isOpen ? ' open' : '';
-  return `<details${open}">\n<summary>${summary}</summary>\n\n${body}\n</details>`;
+  return `<details${open}>\n<summary>${summary}</summary>\n\n${body}\n</details>`;
 }

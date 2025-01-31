@@ -31660,7 +31660,7 @@ function getTestCaseDetails(testCase) {
 }
 function foldoutSection(summary, body, isOpen) {
     const open = isOpen ? ' open' : '';
-    return `<details${open}">\n<summary>${summary}</summary>\n\n${body}\n</details>`;
+    return `<details${open}>\n<summary>${summary}</summary>\n\n${body}\n</details>`;
 }
 
 })();
