@@ -146,13 +146,13 @@ function getTestCaseDetails(testCase: any): string {
     core.info(JSON.stringify(utp, null, 2));
     // annotate failed test cases with the error message
     if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
-      const unityProjectPath = `${env['UNITY_PROJECT_PATH'] || ''}/`.replace(/\\/g, '/');
+      const unityProjectPath = `${env['UNITY_PROJECT_PATH'] || ''}/`;
       core.info(`UNITY_PROJECT_PATH: ${unityProjectPath}`);
-      const workspacePath = `${env['GITHUB_WORKSPACE'] || ''}`.replace(/\\/g, '/');
+      const workspacePath = `${env['GITHUB_WORKSPACE'] || ''}`;
       core.info(`GITHUB_WORKSPACE: ${workspacePath}`);
       const concatProjectPath = unityProjectPath.replace(workspacePath, '');
       core.info(`CONCAT_PROJECT_PATH: ${concatProjectPath}`);
-      const utpFilePath = utp.fileName.replace(/\\/, /\//).replace(/$.\//, '');
+      const utpFilePath = utp.fileName;
       core.info(`UTP_FILE_PATH: ${utpFilePath}`);
       const filePath = `${concatProjectPath}${utpFilePath}`;
       core.info(`FILE_PATH: ${filePath}`);

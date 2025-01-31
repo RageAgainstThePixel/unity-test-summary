@@ -31656,13 +31656,13 @@ function getTestCaseDetails(testCase) {
     const outputLines = utps.map((utp) => {
         core.info(JSON.stringify(utp, null, 2));
         if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
-            const unityProjectPath = `${process_1.env['UNITY_PROJECT_PATH'] || ''}/`.replace(/\\/g, '/');
+            const unityProjectPath = `${process_1.env['UNITY_PROJECT_PATH'] || ''}/`;
             core.info(`UNITY_PROJECT_PATH: ${unityProjectPath}`);
-            const workspacePath = `${process_1.env['GITHUB_WORKSPACE'] || ''}`.replace(/\\/g, '/');
+            const workspacePath = `${process_1.env['GITHUB_WORKSPACE'] || ''}`;
             core.info(`GITHUB_WORKSPACE: ${workspacePath}`);
             const concatProjectPath = unityProjectPath.replace(workspacePath, '');
             core.info(`CONCAT_PROJECT_PATH: ${concatProjectPath}`);
-            const utpFilePath = utp.fileName.replace(/\\/, /\//).replace(/$.\//, '');
+            const utpFilePath = utp.fileName;
             core.info(`UTP_FILE_PATH: ${utpFilePath}`);
             const filePath = `${concatProjectPath}${utpFilePath}`;
             core.info(`FILE_PATH: ${filePath}`);
