@@ -18,4 +18,3 @@ steps:
 | name | description | required |
 | ---- | ----------- | -------- |
 | `test-results` | The path to the test results file(s). | true |
-| `test-suite-name` | The name of the test suite. Defaults to `Test Results`. | false |
