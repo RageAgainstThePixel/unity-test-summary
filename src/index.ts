@@ -166,7 +166,7 @@ function getTestCaseDetails(testCase: any): string {
       const regex = /(\.\/|\.\\)/;
       const filePathWithSeparator = filePath.replace(regex, '');
       core.info(`FILE_PATH_WITH_SEPARATOR: ${filePathWithSeparator}`);
-      core.error(utp.message, { file: filePath, startLine: utp.lineNumber });
+      core.error(utp.message, { file: filePathWithSeparator, startLine: utp.lineNumber });
     }
     return utp.message;
   }).filter((line) => line !== undefined && line !== '');
