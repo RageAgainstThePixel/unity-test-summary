@@ -62,10 +62,11 @@ function printTestSummary(testResults: any[]) {
     const testRunSkippedTests = testRun['skipped'] as number;
     const testRunAsserts = testRun['asserts'] as number;
     const testRunStatusIcon = testRunResult === 'Passed' ? '✅' : '❌';
+    const testMode = testRun['test-suite']['properties']['property']?.find((property: any) => property['name'] === 'platform')['value'] || '';
     if (testResults.length > 1) {
-      core.summary.addHeading(`${testRunStatusIcon} Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
+      core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
     } else {
-      core.summary.addHeading(`${testRunStatusIcon} Test Run ${testRunResult}`);
+      core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test Run ${testRunResult}`);
     }
     core.summary.addRaw(`\n| ${testRunTotalTests} | Total Tests Run |\n`);
     core.summary.addRaw(`|---|---|\n`);

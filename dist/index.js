@@ -31564,6 +31564,7 @@ const main = async () => {
 };
 main();
 function printTestSummary(testResults) {
+    var _a;
     let totalTests = 0;
     for (const testRun of testResults) {
         const testRunResult = testRun['result'].replace(/\s*\(.*?\)\s*/g, '');
@@ -31575,11 +31576,12 @@ function printTestSummary(testResults) {
         const testRunSkippedTests = testRun['skipped'];
         const testRunAsserts = testRun['asserts'];
         const testRunStatusIcon = testRunResult === 'Passed' ? '✅' : '❌';
+        const testMode = ((_a = testRun['test-suite']['properties']['property']) === null || _a === void 0 ? void 0 : _a.find((property) => property['name'] === 'platform')['value']) || '';
         if (testResults.length > 1) {
-            core.summary.addHeading(`${testRunStatusIcon} Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
+            core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
         }
         else {
-            core.summary.addHeading(`${testRunStatusIcon} Test Run ${testRunResult}`);
+            core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test Run ${testRunResult}`);
         }
         core.summary.addRaw(`\n| ${testRunTotalTests} | Total Tests Run |\n`);
         core.summary.addRaw(`|---|---|\n`);
