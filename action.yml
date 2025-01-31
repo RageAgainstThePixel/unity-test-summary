@@ -1,5 +1,8 @@
 name: unity-test-summary
 description: 'A GitHub Actions template repository for TypeScript based Actions'
+branding:
+  icon: 'list'
+  color: 'blue'
 inputs:
   test-results:
     description: 'The path to the test results file(s).'
