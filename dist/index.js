@@ -31600,9 +31600,6 @@ function printTestSummary(testResults) {
     }
 }
 function getTestSuiteDetails(testSuite) {
-    const testSuiteName = testSuite['name'];
-    const testSuiteResult = testSuite['result'].replace(/\s*\(.*?\)\s*/g, '');
-    const testSuiteResultIcon = testSuiteResult === 'Passed' ? '✅' : '❌';
     let details = '';
     const childTestSuites = testSuite['test-suite'];
     if (childTestSuites !== undefined) {
@@ -31626,7 +31623,7 @@ function getTestSuiteDetails(testSuite) {
             details += getTestCaseDetails(childTestCases);
         }
     }
-    return foldoutSection(`${testSuiteResultIcon} ${testSuiteName}`, details, testSuiteResult !== 'Passed');
+    return details;
 }
 function getTestCaseDetails(testCase) {
     const testCaseFullName = testCase['fullname'];

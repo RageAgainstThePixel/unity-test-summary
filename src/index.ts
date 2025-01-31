@@ -98,9 +98,6 @@ function printTestSummary(testResults: any[]) {
  * @param suite
  */
 function getTestSuiteDetails(testSuite: any): string {
-  const testSuiteName = testSuite['name'];
-  const testSuiteResult = testSuite['result'].replace(/\s*\(.*?\)\s*/g, '');
-  const testSuiteResultIcon = testSuiteResult === 'Passed' ? '✅' : '❌';
   let details: string = '';
   const childTestSuites = testSuite['test-suite'];
   if (childTestSuites !== undefined) {
@@ -123,7 +120,7 @@ function getTestSuiteDetails(testSuite: any): string {
       details += getTestCaseDetails(childTestCases);
     }
   }
-  return foldoutSection(`${testSuiteResultIcon} ${testSuiteName}`, details, testSuiteResult !== 'Passed');
+  return details;
 }
 
 function getTestCaseDetails(testCase: any): string {
