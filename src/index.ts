@@ -153,8 +153,8 @@ function getTestCaseDetails(testCase: any): string {
     }
     details += `\`\`\`\n`;
   }
-  const utps = parseUtp(testCase['output']);
-  const outputLines = utps.map((utp) => {
+  const utpOutput = parseUtp(testCase['output']);
+  utpOutput.map((utp) => {
     core.debug(JSON.stringify(utp, null, 2));
     // annotate failed test cases with the error message
     if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
@@ -168,13 +168,12 @@ function getTestCaseDetails(testCase: any): string {
       core.debug(`utpFilePath: ${utpFilePath}`);
       const filePath = `${concatProjectPath}${utpFilePath}`;
       core.debug(`filePath: ${filePath}`);
-      const regex = /(\.\/|\.\\)/;
-      const filePathWithSeparator = filePath.replace(regex, '');
+      const filePathWithSeparator = filePath.replace(/(\.\/|\.\\)/, '');
       core.debug(`filePathWithSeparator: ${filePathWithSeparator}`);
       core.error(utp.message, { file: filePathWithSeparator, startLine: utp.lineNumber });
     }
-    return utp.message;
-  }).filter((line) => line !== undefined && line !== '');
+  });
+  const outputLines = testCase['output'].split('\n').map((line: string) => line.trim()).filter((line: string) => line !== '' && !line.match(/##utp:/));
   if (outputLines.length > 0) {
     details += '\n---\n';
     details += `\`\`\`log\n${outputLines.join('\n')}\n\`\`\`\n`;

@@ -31659,8 +31659,8 @@ function getTestCaseDetails(testCase) {
         }
         details += `\`\`\`\n`;
     }
-    const utps = (0, parser_1.parseUtp)(testCase['output']);
-    const outputLines = utps.map((utp) => {
+    const utpOutput = (0, parser_1.parseUtp)(testCase['output']);
+    utpOutput.map((utp) => {
         core.debug(JSON.stringify(utp, null, 2));
         if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
             const unityProjectPath = `${process_1.env['UNITY_PROJECT_PATH'] || ''}/`;
@@ -31673,13 +31673,12 @@ function getTestCaseDetails(testCase) {
             core.debug(`utpFilePath: ${utpFilePath}`);
             const filePath = `${concatProjectPath}${utpFilePath}`;
             core.debug(`filePath: ${filePath}`);
-            const regex = /(\.\/|\.\\)/;
-            const filePathWithSeparator = filePath.replace(regex, '');
+            const filePathWithSeparator = filePath.replace(/(\.\/|\.\\)/, '');
             core.debug(`filePathWithSeparator: ${filePathWithSeparator}`);
             core.error(utp.message, { file: filePathWithSeparator, startLine: utp.lineNumber });
         }
-        return utp.message;
-    }).filter((line) => line !== undefined && line !== '');
+    });
+    const outputLines = testCase['output'].split('\n').map((line) => line.trim()).filter((line) => line !== '' && !line.match(/##utp:/));
     if (outputLines.length > 0) {
         details += '\n---\n';
         details += `\`\`\`log\n${outputLines.join('\n')}\n\`\`\`\n`;
