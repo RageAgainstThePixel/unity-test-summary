@@ -63,7 +63,15 @@ function printTestSummary(testResults: any[]) {
     const testRunAsserts = testRun['asserts'] as number;
     const testRunStatusIcon = testRunResult === 'Passed' ? '✅' : '❌';
     const testSuiteProperties = testRun['test-suite']['properties'] as any[];
-    const testMode = testSuiteProperties.find((property: any) => property['name'] === 'platform')['value'] || '';
+    let testMode = '';
+    for (const property of testSuiteProperties) {
+      const name = property['name'];
+      const value = property['value'];
+      if (name === 'TestMode') {
+        core.info(`TestMode: ${value}`);
+        testMode = value;
+      }
+    }
     if (testResults.length > 1) {
       core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
     } else {

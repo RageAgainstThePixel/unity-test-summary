@@ -31576,7 +31576,15 @@ function printTestSummary(testResults) {
         const testRunAsserts = testRun['asserts'];
         const testRunStatusIcon = testRunResult === 'Passed' ? '✅' : '❌';
         const testSuiteProperties = testRun['test-suite']['properties'];
-        const testMode = testSuiteProperties.find((property) => property['name'] === 'platform')['value'] || '';
+        let testMode = '';
+        for (const property of testSuiteProperties) {
+            const name = property['name'];
+            const value = property['value'];
+            if (name === 'TestMode') {
+                core.info(`TestMode: ${value}`);
+                testMode = value;
+            }
+        }
         if (testResults.length > 1) {
             core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
         }
