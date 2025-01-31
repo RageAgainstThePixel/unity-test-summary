@@ -130,6 +130,11 @@ function getTestSuiteDetails(testSuite: any): string {
   return details;
 }
 
+/**
+ * Prints the test case summary as foldout section.
+ * @param testCase
+ * @returns The test case details as a markdown string
+ */
 function getTestCaseDetails(testCase: any): string {
   const testCaseFullName = testCase['fullname'];
   const testCaseResult = testCase['result'];
@@ -154,18 +159,18 @@ function getTestCaseDetails(testCase: any): string {
     // annotate failed test cases with the error message
     if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
       const unityProjectPath = `${env['UNITY_PROJECT_PATH'] || ''}/`;
-      core.info(`UNITY_PROJECT_PATH: ${unityProjectPath}`);
+      core.debug(`unityProjectPath: ${unityProjectPath}`);
       const workspacePath = `${env['GITHUB_WORKSPACE'] || ''}`;
-      core.info(`GITHUB_WORKSPACE: ${workspacePath}`);
+      core.debug(`workspacePath: ${workspacePath}`);
       const concatProjectPath = unityProjectPath.replace(workspacePath, '');
-      core.info(`CONCAT_PROJECT_PATH: ${concatProjectPath}`);
+      core.debug(`concatProjectPath: ${concatProjectPath}`);
       const utpFilePath = utp.fileName;
-      core.info(`UTP_FILE_PATH: ${utpFilePath}`);
+      core.debug(`utpFilePath: ${utpFilePath}`);
       const filePath = `${concatProjectPath}${utpFilePath}`;
-      core.info(`FILE_PATH: ${filePath}`);
+      core.debug(`filePath: ${filePath}`);
       const regex = /(\.\/|\.\\)/;
       const filePathWithSeparator = filePath.replace(regex, '');
-      core.info(`FILE_PATH_WITH_SEPARATOR: ${filePathWithSeparator}`);
+      core.debug(`filePathWithSeparator: ${filePathWithSeparator}`);
       core.error(utp.message, { file: filePathWithSeparator, startLine: utp.lineNumber });
     }
     return utp.message;
@@ -177,6 +182,13 @@ function getTestCaseDetails(testCase: any): string {
   return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, testCaseResult !== 'Passed');
 }
 
+/**
+ * Creates a foldout section with a summary and body.
+ * @param summary The summary of the foldout section
+ * @param body The body of the foldout section
+ * @param isOpen Whether the foldout section is open or closed
+ * @returns The foldout section as a markdown string
+ */
 function foldoutSection(summary: string, body: string, isOpen: boolean): string {
   const open = isOpen ? ' open' : '';
   return `<details${open}>\n<summary>${summary}</summary>\n\n${body}\n</details>`;
