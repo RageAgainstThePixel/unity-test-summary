@@ -31575,7 +31575,8 @@ function printTestSummary(testResults) {
         const testRunSkippedTests = testRun['skipped'];
         const testRunAsserts = testRun['asserts'];
         const testRunStatusIcon = testRunResult === 'Passed' ? '✅' : '❌';
-        const testMode = testRun['test-suite']['properties']['property'].find((property) => property['name'] === 'platform')['value'] || '';
+        const testSuiteProperties = testRun['test-suite']['properties']['property'];
+        const testMode = testSuiteProperties.find((property) => property['name'] === 'platform')['value'] || '';
         if (testResults.length > 1) {
             core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
         }

@@ -62,7 +62,8 @@ function printTestSummary(testResults: any[]) {
     const testRunSkippedTests = testRun['skipped'] as number;
     const testRunAsserts = testRun['asserts'] as number;
     const testRunStatusIcon = testRunResult === 'Passed' ? '✅' : '❌';
-    const testMode = testRun['test-suite']['properties']['property'].find((property: any) => property['name'] === 'platform')['value'] || '';
+    const testSuiteProperties = testRun['test-suite']['properties']['property'] as Map<string, string>[];
+    const testMode = testSuiteProperties.find((property: any) => property['name'] === 'platform')['value'] || '';
     if (testResults.length > 1) {
       core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
     } else {
