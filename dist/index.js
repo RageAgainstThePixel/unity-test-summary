@@ -29584,6 +29584,7 @@ exports["default"] = _default;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseTestResults = parseTestResults;
 exports.parseUtp = parseUtp;
+exports.parseLogs = parseLogs;
 const fs = __nccwpck_require__(7147);
 const fast_xml_parser_1 = __nccwpck_require__(2603);
 async function parseTestResults(file) {
@@ -29608,6 +29609,21 @@ function parseUtp(output) {
         objs.push(JSON.parse(match[1]));
     }
     return objs;
+}
+function parseLogs(output) {
+    const logs = [];
+    const lines = output.split('\n');
+    for (let line of lines) {
+        if (line.match(/##utp:/)) {
+            continue;
+        }
+        line = line.replace(/\u001b\[[0-9;]*m/, '').trim();
+        if (line === '') {
+            continue;
+        }
+        logs.push(line);
+    }
+    return logs;
 }
 
 
@@ -31678,7 +31694,7 @@ function getTestCaseDetails(testCase) {
             core.error(utp.message, { file: filePathWithSeparator, startLine: utp.lineNumber });
         }
     });
-    const outputLines = testCase['output'].split('\n').map((line) => line.trim()).filter((line) => line !== '' && !line.match(/##utp:/));
+    const outputLines = (0, parser_1.parseLogs)(testCase['output']);
     if (outputLines.length > 0) {
         details += '\n---\n';
         details += `\`\`\`log\n${outputLines.join('\n')}\n\`\`\`\n`;

@@ -2,7 +2,8 @@ import core = require('@actions/core');
 import glob = require('@actions/glob');
 import {
   parseTestResults,
-  parseUtp
+  parseUtp,
+  parseLogs
 } from './parser';
 import { env } from 'process';
 
@@ -173,7 +174,7 @@ function getTestCaseDetails(testCase: any): string {
       core.error(utp.message, { file: filePathWithSeparator, startLine: utp.lineNumber });
     }
   });
-  const outputLines = testCase['output'].split('\n').map((line: string) => line.trim()).filter((line: string) => line !== '' && !line.match(/##utp:/));
+  const outputLines = parseLogs(testCase['output']);
   if (outputLines.length > 0) {
     details += '\n---\n';
     details += `\`\`\`log\n${outputLines.join('\n')}\n\`\`\`\n`;

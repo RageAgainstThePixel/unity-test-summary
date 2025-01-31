@@ -35,3 +35,19 @@ export function parseUtp(output: string): any[] {
   }
   return objs;
 }
+
+export function parseLogs(output: string): any[] {
+  const logs = [];
+  const lines = output.split('\n');
+  for (let line of lines) {
+    if (line.match(/##utp:/)) {
+      continue;
+    }
+    line = line.replace(/\u001b\[[0-9;]*m/, '').trim();
+    if (line === '') {
+      continue;
+    }
+    logs.push(line);
+  }
+  return logs;
+}
