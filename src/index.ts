@@ -144,7 +144,7 @@ function getTestCaseDetails(testCase: any): string {
     core.info(JSON.stringify(utp, null, 2));
     // annotate failed test cases with the error message
     if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
-      core.error(utp.message, { file: utp.fileName.replace(/$.\//, ''), startLine: utp.lineNumber });
+      core.error(utp.message, { file: utp.fileName.replace(/\\/, /\//).replace(/$.\//, ''), startLine: utp.lineNumber });
     }
     return utp.message;
   }).filter((line) => line !== undefined && line !== '');
