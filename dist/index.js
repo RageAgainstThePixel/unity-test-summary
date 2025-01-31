@@ -31575,16 +31575,7 @@ function printTestSummary(testResults) {
         const testRunSkippedTests = testRun['skipped'];
         const testRunAsserts = testRun['asserts'];
         const testRunStatusIcon = testRunResult === 'Passed' ? '✅' : '❌';
-        const testSuiteProperties = testRun['test-suite']['properties'];
-        let testMode = '';
-        for (const property of testSuiteProperties) {
-            const name = property['name'];
-            const value = property['value'];
-            if (name === 'TestMode') {
-                core.info(`TestMode: ${value}`);
-                testMode = value;
-            }
-        }
+        const testMode = testRun['test-suite']['properties']['property']['value'] || '';
         if (testResults.length > 1) {
             core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
         }
@@ -31650,14 +31641,16 @@ function getTestCaseDetails(testCase) {
     const failure = testCase['failure'];
     let details = `${testCase['methodname']} (${testCase['duration']}s)\n\n`;
     if (failure) {
+        details += `\`\`\`error\n`;
         const failureMessage = failure['message'];
         if (failureMessage) {
-            details += `---\n${failure['message']}\n`;
+            details += `${failure['message']}\n`;
         }
         const stackTrace = failure['stack-trace'];
         if (stackTrace) {
-            details += `\`\`\`stacktrace\n${stackTrace}\n\`\`\`\n`;
+            details += `${stackTrace}\n`;
         }
+        details += `\`\`\`\n`;
     }
     const utps = (0, parser_1.parseUtp)(testCase['output']);
     const outputLines = utps.map((utp) => {
