@@ -31662,7 +31662,7 @@ function getTestCaseDetails(testCase) {
     const testCaseResult = testCase['result'];
     const testCaseResultIcon = testCaseResult === 'Passed' ? '✅' : '❌';
     const failure = testCase['failure'];
-    let details = `${testCase['methodname']} (${testCase['duration']}s)\n\n`;
+    let details = `\n\n`;
     if (failure) {
         details += `\`\`\`error\n`;
         const failureMessage = failure['message'].trim();
@@ -31699,7 +31699,7 @@ function getTestCaseDetails(testCase) {
         details += '\n---\n';
         details += `\`\`\`log\n${outputLines.join('\n')}\n\`\`\`\n`;
     }
-    return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, testCaseResult !== 'Passed');
+    return foldoutSection(`${testCaseResultIcon} ${testCaseFullName} (${testCase['duration']}s)`, details, testCaseResult !== 'Passed');
 }
 function foldoutSection(summary, body, isOpen) {
     const open = isOpen ? ' open' : '';
