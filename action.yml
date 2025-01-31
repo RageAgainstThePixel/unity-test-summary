@@ -4,10 +4,6 @@ inputs:
   test-results:
     description: 'The path to the test results file(s).'
     required: true
-  test-suite-name:
-    description: 'The name of the test suite.'
-    required: false
-    default: 'Test Results'
 runs:
   using: 'node20'
   main: 'dist/index.js'

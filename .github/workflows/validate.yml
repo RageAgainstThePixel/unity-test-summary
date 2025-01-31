@@ -76,4 +76,3 @@ jobs:
         if: success() || failure()
         with:
           test-results: ${{ github.workspace }}/Logs/*-results.xml
-          test-suite-name: '${{ matrix.os }} ${{ matrix.unity-version }} ${{ matrix.build-target }} Utilities.Async Test Results'

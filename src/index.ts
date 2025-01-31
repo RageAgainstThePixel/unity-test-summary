@@ -9,9 +9,8 @@ import { env } from 'process';
 const main = async () => {
   try {
     const testResultsInput = core.getInput('test-results');
-    const testSuiteName = core.getInput('test-suite-name');
-    core.info(`Gathering ${testSuiteName}...`);
-    core.summary.addHeading(`${testSuiteName} Summary`);
+    core.info(`Gathering Test Results...`);
+    core.summary.addHeading(`Test Results Summary`);
     core.info(`test-results:\n  > ${testResultsInput}`);
     const globber = await glob.create(testResultsInput);
     const testResultFiles = await globber.glob();
@@ -35,6 +34,7 @@ const main = async () => {
       core.info(JSON.stringify(testResult, null, 2));
     }
     printTestSummary(testResults);
+    core.summary.write();
   } catch (error) {
     core.setFailed(error);
   }
@@ -91,7 +91,6 @@ function printTestSummary(testResults: any[]) {
     } else {
       core.summary.addRaw(getTestSuiteDetails(testSuite));
     }
-    core.summary.write();
   }
 }
 
