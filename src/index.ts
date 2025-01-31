@@ -143,8 +143,16 @@ function getTestCaseDetails(testCase: any, level: number = 0): string {
     }
   }
   const utps = parseUtp(testCase['output']);
-  const outputLines = utps.map((utp) => utp.message).filter((line) => line !== undefined && line !== '');
+  const outputLines = utps.map((utp) => {
+    core.info(JSON.stringify(utp, null, 2));
+    // annotate failed test cases with the error message
+    if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
+      core.error(utp.message, { file: utp.filename, startLine: utp.linenumber });
+    }
+    return utp.message;
+  }).filter((line) => line !== undefined && line !== '');
   if (outputLines.length > 0) {
+    details += '\n---\n';
     details += `\`\`\`log\n${outputLines.join('\n')}\n\`\`\`\n`;
   }
   return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, testCaseResult !== 'Passed', level);
