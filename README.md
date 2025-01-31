@@ -1,6 +1,6 @@
-# github-action-template
+# unity-test-summary
 
-A GitHub Actions template repository for TypeScript based Actions.
+A GitHub action to gather and display Unit Tests from the Unity Game Engine.
 
 ## How to use
 
@@ -8,13 +8,13 @@ A GitHub Actions template repository for TypeScript based Actions.
 
 ```yaml
 steps:
-  - uses: RageAgainstThePixel/github-action-template@v1
+  - uses: RageAgainstThePixel/unity-test-summary@v1
+  with:
+    test-results: 'path/to/test-results/**/*.xml'
 ```
 
 ### inputs
 
 | name | description | required |
 | ---- | ----------- | -------- |
-| .... | ........... | ........ |
-
-### outputs
+| `test-results` | The path to the test results file(s). | true |
