@@ -62,7 +62,13 @@ function printTestSummary(testResults: any[]) {
     const testRunSkippedTests = testRun['skipped'] as number;
     const testRunAsserts = testRun['asserts'] as number;
     const testRunStatusIcon = testRunResult === 'Passed' ? '✅' : '❌';
-    const testMode = testRun['test-suite']['properties']['property']['value'] || '';
+    let testMode = '';
+    try {
+      const testSuiteProperties = testRun['test-suite']['properties']['property'];
+      testMode = testSuiteProperties ? testSuiteProperties['value'] : '';
+    } catch (error) {
+      core.error(error);
+    }
     if (testResults.length > 1) {
       core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test (Run ${++totalTests} of ${testResults.length}) ${testRunResult}`);
     } else {
@@ -132,12 +138,12 @@ function getTestCaseDetails(testCase: any): string {
   let details = `${testCase['methodname']} (${testCase['duration']}s)\n\n`;
   if (failure) {
     details += `\`\`\`error\n`;
-    const failureMessage = failure['message'];
-    if (failureMessage) {
+    const failureMessage = (failure['message'] as string).trim();
+    if (failureMessage && failureMessage !== '') {
       details += `${failure['message']}\n`;
     }
-    const stackTrace = failure['stack-trace'];
-    if (stackTrace) {
+    const stackTrace = (failure['stack-trace'] as string).trim();
+    if (stackTrace && stackTrace !== '') {
       details += `${stackTrace}\n`;
     }
     details += `\`\`\`\n`;
@@ -157,9 +163,8 @@ function getTestCaseDetails(testCase: any): string {
       core.info(`UTP_FILE_PATH: ${utpFilePath}`);
       const filePath = `${concatProjectPath}${utpFilePath}`;
       core.info(`FILE_PATH: ${filePath}`);
-      // replace /.\ or \.\ with respective path separator for os
-      const regex = /\/\.|\\\.|\/|\\/g;
-      const filePathWithSeparator = filePath.replace(regex, env.platform === 'win32' ? '\\' : '/');
+      const regex = /(\.\/|\.\\)/;
+      const filePathWithSeparator = filePath.replace(regex, '');
       core.info(`FILE_PATH_WITH_SEPARATOR: ${filePathWithSeparator}`);
       core.error(utp.message, { file: filePath, startLine: utp.lineNumber });
     }
