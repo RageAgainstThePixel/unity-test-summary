@@ -97,7 +97,7 @@ function printTestSummary(testResults: any[]) {
  * Prints the test suite summary as foldout section.
  * @param suite
  */
-function getTestSuiteDetails(testSuite: any, level: number = 0): string {
+function getTestSuiteDetails(testSuite: any): string {
   const testSuiteName = testSuite['name'];
   const testSuiteResult = testSuite['result'].replace(/\s*\(.*?\)\s*/g, '');
   const testSuiteResultIcon = testSuiteResult === 'Passed' ? '✅' : '❌';
@@ -107,31 +107,31 @@ function getTestSuiteDetails(testSuite: any, level: number = 0): string {
 
     if (Array.isArray(childTestSuites)) {
       for (const suite of childTestSuites) {
-        details += getTestSuiteDetails(suite, level + 1);
+        details += getTestSuiteDetails(suite);
       }
     } else {
-      details += getTestSuiteDetails(childTestSuites, level + 1);
+      details += getTestSuiteDetails(childTestSuites);
     }
   }
   const childTestCases = testSuite['test-case'];
   if (childTestCases !== undefined) {
     if (Array.isArray(childTestCases)) {
       for (const testCase of childTestCases) {
-        details += getTestCaseDetails(testCase, level + 1);
+        details += getTestCaseDetails(testCase);
       }
     } else {
-      details += getTestCaseDetails(childTestCases, level + 1);
+      details += getTestCaseDetails(childTestCases);
     }
   }
-  return foldoutSection(`${testSuiteResultIcon} ${testSuiteName}`, details, testSuiteResult !== 'Passed', level);
+  return foldoutSection(`${testSuiteResultIcon} ${testSuiteName}`, details, testSuiteResult !== 'Passed');
 }
 
-function getTestCaseDetails(testCase: any, level: number = 0): string {
+function getTestCaseDetails(testCase: any): string {
   const testCaseFullName = testCase['fullname'];
   const testCaseResult = testCase['result'];
   const testCaseResultIcon = testCaseResult === 'Passed' ? '✅' : '❌';
   const failure = testCase['failure'];
-  let details = `${testCase['methodname']} (${testCase['duration']}s)\n`;
+  let details = `${testCase['methodname']} (${testCase['duration']}s)\n\n`;
   if (failure) {
     const failureMessage = failure['message'];
     if (failureMessage) {
@@ -147,7 +147,7 @@ function getTestCaseDetails(testCase: any, level: number = 0): string {
     core.info(JSON.stringify(utp, null, 2));
     // annotate failed test cases with the error message
     if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
-      core.error(utp.message, { file: utp.filename, startLine: utp.linenumber });
+      core.error(utp.message, { file: utp.filename.replace(/$.\//, ''), startLine: utp.linenumber });
     }
     return utp.message;
   }).filter((line) => line !== undefined && line !== '');
@@ -155,11 +155,10 @@ function getTestCaseDetails(testCase: any, level: number = 0): string {
     details += '\n---\n';
     details += `\`\`\`log\n${outputLines.join('\n')}\n\`\`\`\n`;
   }
-  return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, testCaseResult !== 'Passed', level);
+  return foldoutSection(`${testCaseResultIcon} ${testCaseFullName}`, details, testCaseResult !== 'Passed');
 }
 
-function foldoutSection(summary: string, body: string, isOpen: boolean, level: number = 0): string {
+function foldoutSection(summary: string, body: string, isOpen: boolean): string {
   const open = isOpen ? ' open' : '';
-  const indent = level * 20; // Adjust the multiplier to control the indentation width
-  return `<details${open} style="margin-left:${indent}px;">\n<summary>${summary}</summary>\n\n${body}\n</details>`;
+  return `<details${open}">\n<summary>${summary}</summary>\n\n${body}\n</details>`;
 }
