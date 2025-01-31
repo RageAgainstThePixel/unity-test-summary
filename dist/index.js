@@ -31645,7 +31645,7 @@ function getTestCaseDetails(testCase) {
     const outputLines = utps.map((utp) => {
         core.info(JSON.stringify(utp, null, 2));
         if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
-            core.error(utp.message, { file: utp.fileName.replace(/$.\//, ''), startLine: utp.linenumber });
+            core.error(utp.message, { file: utp.fileName.replace(/$.\//, ''), startLine: utp.lineNumber });
         }
         return utp.message;
     }).filter((line) => line !== undefined && line !== '');
