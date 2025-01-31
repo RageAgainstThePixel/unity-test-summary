@@ -43,7 +43,7 @@ export function parseLogs(output: string): any[] {
     if (line.match(/##utp:/)) {
       continue;
     }
-    line = line.replace(/\u001b\[[0-9;]*m/, '').trim();
+    line = line.replace(/\u001b\[[0-9]*m/g, '').trim();
     if (line === '') {
       continue;
     }
