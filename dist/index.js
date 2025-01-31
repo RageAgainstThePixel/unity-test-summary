@@ -29617,7 +29617,7 @@ function parseLogs(output) {
         if (line.match(/##utp:/)) {
             continue;
         }
-        line = line.replace(/\u001b\[[0-9]*m/g, '').trim();
+        line = line.replace(/\\u001b\[[0-9]*m/, '').trim();
         if (line === '') {
             continue;
         }
