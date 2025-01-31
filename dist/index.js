@@ -31553,7 +31553,7 @@ const main = async () => {
             }
         }
         for (const testResult of testResults) {
-            core.info(JSON.stringify(testResult, null, 2));
+            core.debug(JSON.stringify(testResult, null, 2));
         }
         printTestSummary(testResults);
         core.summary.write();
@@ -31577,7 +31577,7 @@ function printTestSummary(testResults) {
         const testRunStatusIcon = testRunResult === 'Passed' ? '✅' : '❌';
         const testMode = testRun['test-suite']['properties']['property']['value'] || '';
         if (testResults.length > 1) {
-            core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
+            core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test (Run ${++totalTests} of ${testResults.length}) ${testRunResult}`);
         }
         else {
             core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test Run ${testRunResult}`);
@@ -31654,7 +31654,7 @@ function getTestCaseDetails(testCase) {
     }
     const utps = (0, parser_1.parseUtp)(testCase['output']);
     const outputLines = utps.map((utp) => {
-        core.info(JSON.stringify(utp, null, 2));
+        core.debug(JSON.stringify(utp, null, 2));
         if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
             const unityProjectPath = `${process_1.env['UNITY_PROJECT_PATH'] || ''}/`;
             core.info(`UNITY_PROJECT_PATH: ${unityProjectPath}`);
@@ -31666,6 +31666,9 @@ function getTestCaseDetails(testCase) {
             core.info(`UTP_FILE_PATH: ${utpFilePath}`);
             const filePath = `${concatProjectPath}${utpFilePath}`;
             core.info(`FILE_PATH: ${filePath}`);
+            const regex = /\/\.|\\\.|\/|\\/g;
+            const filePathWithSeparator = filePath.replace(regex, process_1.env.platform === 'win32' ? '\\' : '/');
+            core.info(`FILE_PATH_WITH_SEPARATOR: ${filePathWithSeparator}`);
             core.error(utp.message, { file: filePath, startLine: utp.lineNumber });
         }
         return utp.message;
