@@ -31655,10 +31655,15 @@ function getTestCaseDetails(testCase) {
         core.info(JSON.stringify(utp, null, 2));
         if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
             const unityProjectPath = `${process_1.env['UNITY_PROJECT_PATH'] || ''}/`.replace(/\\/g, '/');
+            core.info(`UNITY_PROJECT_PATH: ${unityProjectPath}`);
             const workspacePath = `${process_1.env['GITHUB_WORKSPACE'] || ''}`.replace(/\\/g, '/');
+            core.info(`GITHUB_WORKSPACE: ${workspacePath}`);
             const concatProjectPath = unityProjectPath.replace(workspacePath, '');
+            core.info(`CONCAT_PROJECT_PATH: ${concatProjectPath}`);
             const utpFilePath = utp.fileName.replace(/\\/, /\//).replace(/$.\//, '');
-            const filePath = `${concatProjectPath}${utpFilePath}`.replace(/\\/g, '/');
+            core.info(`UTP_FILE_PATH: ${utpFilePath}`);
+            const filePath = `${concatProjectPath}${utpFilePath}`;
+            core.info(`FILE_PATH: ${filePath}`);
             core.error(utp.message, { file: filePath, startLine: utp.lineNumber });
         }
         return utp.message;
