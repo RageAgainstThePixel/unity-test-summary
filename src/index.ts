@@ -31,7 +31,7 @@ const main = async () => {
       }
     }
     for (const testResult of testResults) {
-      core.info(JSON.stringify(testResult, null, 2));
+      core.debug(JSON.stringify(testResult, null, 2));
     }
     printTestSummary(testResults);
     core.summary.write();
@@ -64,7 +64,7 @@ function printTestSummary(testResults: any[]) {
     const testRunStatusIcon = testRunResult === 'Passed' ? '✅' : '❌';
     const testMode = testRun['test-suite']['properties']['property']['value'] || '';
     if (testResults.length > 1) {
-      core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test Run ${++totalTests} of ${testResults.length} ${testRunResult}`);
+      core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test (Run ${++totalTests} of ${testResults.length}) ${testRunResult}`);
     } else {
       core.summary.addHeading(`${testRunStatusIcon} ${testMode} Test Run ${testRunResult}`);
     }
@@ -144,7 +144,7 @@ function getTestCaseDetails(testCase: any): string {
   }
   const utps = parseUtp(testCase['output']);
   const outputLines = utps.map((utp) => {
-    core.info(JSON.stringify(utp, null, 2));
+    core.debug(JSON.stringify(utp, null, 2));
     // annotate failed test cases with the error message
     if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
       const unityProjectPath = `${env['UNITY_PROJECT_PATH'] || ''}/`;
@@ -157,6 +157,10 @@ function getTestCaseDetails(testCase: any): string {
       core.info(`UTP_FILE_PATH: ${utpFilePath}`);
       const filePath = `${concatProjectPath}${utpFilePath}`;
       core.info(`FILE_PATH: ${filePath}`);
+      // replace /.\ or \.\ with respective path separator for os
+      const regex = /\/\.|\\\.|\/|\\/g;
+      const filePathWithSeparator = filePath.replace(regex, env.platform === 'win32' ? '\\' : '/');
+      core.info(`FILE_PATH_WITH_SEPARATOR: ${filePathWithSeparator}`);
       core.error(utp.message, { file: filePath, startLine: utp.lineNumber });
     }
     return utp.message;
