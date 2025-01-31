@@ -4,6 +4,7 @@ import {
   parseTestResults,
   parseUtp
 } from './parser';
+import { env } from 'process';
 
 const main = async () => {
   try {
@@ -144,7 +145,12 @@ function getTestCaseDetails(testCase: any): string {
     core.info(JSON.stringify(utp, null, 2));
     // annotate failed test cases with the error message
     if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
-      core.error(utp.message, { file: utp.fileName.replace(/\\/, /\//).replace(/$.\//, ''), startLine: utp.lineNumber });
+      const unityProjectPath = `${env['UNITY_PROJECT_PATH'] || ''}/`.replace(/\\/g, '/');
+      const workspacePath = `${env['GITHUB_WORKSPACE'] || ''}`.replace(/\\/g, '/');
+      const concatProjectPath = unityProjectPath.replace(workspacePath, '');
+      const utpFilePath = utp.fileName.replace(/\\/, /\//).replace(/$.\//, '');
+      const filePath = `${concatProjectPath}${utpFilePath}`.replace(/\\/g, '/');
+      core.error(utp.message, { file: filePath, startLine: utp.lineNumber });
     }
     return utp.message;
   }).filter((line) => line !== undefined && line !== '');

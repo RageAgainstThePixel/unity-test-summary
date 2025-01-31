@@ -29773,6 +29773,14 @@ module.exports = require("perf_hooks");
 
 /***/ }),
 
+/***/ 7282:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("process");
+
+/***/ }),
+
 /***/ 3477:
 /***/ ((module) => {
 
@@ -31518,6 +31526,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __nccwpck_require__(2186);
 const glob = __nccwpck_require__(8090);
 const parser_1 = __nccwpck_require__(8412);
+const process_1 = __nccwpck_require__(7282);
 const main = async () => {
     try {
         const testResultsInput = core.getInput('test-results');
@@ -31645,7 +31654,12 @@ function getTestCaseDetails(testCase) {
     const outputLines = utps.map((utp) => {
         core.info(JSON.stringify(utp, null, 2));
         if (utp.type === 'TestStatus' && utp.phase === 'End' && utp.state === 5) {
-            core.error(utp.message, { file: utp.fileName.replace(/\\/, /\//).replace(/$.\//, ''), startLine: utp.lineNumber });
+            const unityProjectPath = `${process_1.env['UNITY_PROJECT_PATH'] || ''}/`.replace(/\\/g, '/');
+            const workspacePath = `${process_1.env['GITHUB_WORKSPACE'] || ''}`.replace(/\\/g, '/');
+            const concatProjectPath = unityProjectPath.replace(workspacePath, '');
+            const utpFilePath = utp.fileName.replace(/\\/, /\//).replace(/$.\//, '');
+            const filePath = `${concatProjectPath}${utpFilePath}`.replace(/\\/g, '/');
+            core.error(utp.message, { file: filePath, startLine: utp.lineNumber });
         }
         return utp.message;
     }).filter((line) => line !== undefined && line !== '');
