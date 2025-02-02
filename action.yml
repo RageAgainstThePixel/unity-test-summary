@@ -1,5 +1,5 @@
 name: unity-test-summary
-description: 'A GitHub Actions template repository for TypeScript based Actions'
+description: 'A GitHub action to gather and display Unit Tests from the Unity Game Engine.'
 branding:
   icon: 'list'
   color: 'blue'
