@@ -44,7 +44,7 @@ export function parseLogs(output: string): any[] {
       continue;
     }
     line = line.replace(/\\u001b\[[0-9]*m/g, '')?.trim();
-    if (line === '' || line.startsWith('Saving results to:')) {
+    if (!line || line === '' || line.startsWith('Saving results to:')) {
       continue;
     }
     logs.push(line);
