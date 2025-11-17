@@ -30326,7 +30326,7 @@ function parseLogs(output) {
             continue;
         }
         line = (_a = line.replace(/\\u001b\[[0-9]*m/g, '')) === null || _a === void 0 ? void 0 : _a.trim();
-        if (line === '' || line.startsWith('Saving results to:')) {
+        if (!line || line === '' || line.startsWith('Saving results to:')) {
             continue;
         }
         logs.push(line);
