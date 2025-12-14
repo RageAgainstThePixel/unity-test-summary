@@ -28,8 +28,8 @@ jobs:
         with:
           remove_android: true
           remove_dotnet: false
-      - uses: actions/checkout@v5 # checkout self
-      - uses: actions/checkout@v5 # checkout async test repo
+      - uses: actions/checkout@v6 # checkout self
+      - uses: actions/checkout@v6 # checkout async test repo
         with:
           repository: RageAgainstThePixel/com.utilities.async
           path: com.utilities.async
@@ -43,18 +43,18 @@ jobs:
           license: personal
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
-      - uses: RageAgainstThePixel/unity-action@main
+      - uses: RageAgainstThePixel/unity-action@dev
         name: ${{ matrix.build-target }}-Validate
         with:
           log-name: ${{ matrix.build-target }}-Validate
           args: -quit -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
-      - uses: RageAgainstThePixel/unity-action@main
+      - uses: RageAgainstThePixel/unity-action@dev
         name: ${{ matrix.build-target }}-Test
         with:
           log-name: ${{ matrix.build-target }}-Test
           build-target: ${{ matrix.build-target }}
           args: -runTests -testPlatform EditMode -testResults "${{ github.workspace }}/Logs/${{ matrix.build-target }}-results.xml"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: success() || failure()
         with:
           compression-level: 0
