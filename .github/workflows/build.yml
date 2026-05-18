@@ -43,12 +43,12 @@ jobs:
           license: personal
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
-      - uses: RageAgainstThePixel/unity-action@dev
+      - uses: RageAgainstThePixel/unity-action@main
         name: ${{ matrix.build-target }}-Validate
         with:
           log-name: ${{ matrix.build-target }}-Validate
           args: -quit -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
-      - uses: RageAgainstThePixel/unity-action@dev
+      - uses: RageAgainstThePixel/unity-action@main
         name: ${{ matrix.build-target }}-Test
         with:
           log-name: ${{ matrix.build-target }}-Test
