@@ -42375,6 +42375,8 @@ async function parseTestResults(file) {
     const parser = new XMLParser({
         attributeNamePrefix: ``,
         ignoreAttributes: false,
+        parseAttributeValue: false,
+        parseTagValue: true,
     });
     const obj = parser.parse(contents);
     const testJson = JSON.stringify(obj['test-run'], null, 2);
