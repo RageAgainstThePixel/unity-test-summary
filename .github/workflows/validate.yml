@@ -19,8 +19,15 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'schedule' && 'legacy' || inputs.editors || 'unity-6-and-newer' }}
   cancel-in-progress: true
 jobs:
+  changes:
+    permissions:
+      contents: read
+      pull-requests: read
+    # docs-only pull requests skip validation; validate-result still reports for them
+    uses: RageAgainstThePixel/workflows/.github/workflows/detect-changes.yml@main
   setup:
-    if: github.event.pull_request.draft == false
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' && github.event.pull_request.draft == false }}
     permissions:
       contents: read
     # pull requests and pushes test the streams Unity lists; the older editors run monthly or on demand
@@ -32,7 +39,8 @@ jobs:
   # repository can be downloaded by anyone, and it is never returned: a return would revoke it for every job on that
   # identity, other repositories' included. license-cleanup deletes it after the run.
   license:
-    if: github.event.pull_request.draft == false
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' && github.event.pull_request.draft == false }}
     name: license ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
@@ -114,7 +122,7 @@ jobs:
     # a failed run may be retried by rerun-validate (3 attempts at most), and the license job is not rerun with the
     # failed rows, so the artifacts stay for the retry; this job reruns with them and cleans up on the last attempt.
     # Anything left expires with the 1-day retention
-    if: ${{ always() && (needs.validate.result != 'failure' || github.run_attempt >= 3) }}
+    if: ${{ always() && needs.license.result != 'skipped' && (needs.validate.result != 'failure' || github.run_attempt >= 3) }}
     runs-on: ubuntu-slim
     timeout-minutes: 5
     permissions:
@@ -139,6 +147,27 @@ jobs:
             count=$((count + 1))
           done
           echo "Deleted ${count} license artifacts"
+  # the one required check: passes when every job passed, or was skipped for a draft or a docs-only change
+  validate-result:
+    # the license job only saves sign-ins: the rows activate with the account when it fails
+    needs: [changes, setup, validate]
+    if: always()
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Check results
+        shell: bash
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "results: ${RESULTS}"
+          for result in ${RESULTS}; do
+            case "${result}" in
+              success|skipped) ;;
+              *) exit 1 ;;
+            esac
+          done
   timeline:
     needs: [setup, license, validate]
     if: always()
