@@ -18,3 +18,7 @@ steps:
 | name | description | required |
 | ---- | ----------- | -------- |
 | `test-results` | The path to the test results file(s). | true |
+
+## validation
+
+Pull requests test the current Unity streams; a monthly run covers the older lines.
